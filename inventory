@@ -1,0 +1,5 @@
+Host-A ansible_host=192.168.0.11 ansible_user=user ansible_password=qwe ansible_become_pass=qwe
+Host-B ansible_host=192.168.0.12 ansible_user=user ansible_password=qwe ansible_become_pass=qwe
+
+
+

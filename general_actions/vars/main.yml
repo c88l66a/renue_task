@@ -1,0 +1,5 @@
+---
+sshd_path: /etc/ssh/
+ssh_key_path: /home/DevOps/.ssh
+user: DevOps
+pass: qwe

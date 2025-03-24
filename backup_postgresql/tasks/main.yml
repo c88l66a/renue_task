@@ -1,0 +1,19 @@
+---
+- name: Скачивание pg_basebackup
+  apt: "name=postgresql-client state=present"
+
+- name: Копирование скрипта для бэкапирования
+  copy: "src={{ item }} dest=/root/ mode=700"
+  with_items:
+    - backup.sh
+
+- name: Настройка времени
+  shell: "sudo timedatectl set-timezone Europe/Moscow"
+
+- name: Создание cron задачи
+  cron:
+    name: "postgresql_data_backup"
+    user: "root"
+    minute: "45"
+    hour: "0"
+    job: "/bin/sh /root/backup.sh"

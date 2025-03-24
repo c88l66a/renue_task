@@ -1,0 +1,17 @@
+[postgresql]
+enabled   = true
+filter    = postgresql
+action    = iptables[name=PostgreSQL, port=5432, protocol=tcp, blocktype=DROP]
+logpath   = /var/log/postgresql/postgresql-12-main.log
+maxretry  = 6
+bantime   = 1h
+findtime  = 1m
+
+[sshd]
+enabled   = true
+filter    = sshd[mode=aggressive]
+action    = iptables[name=sshd, port=22, protocol=tcp, blocktype=DROP]
+logpath   = /var/log/auth.log
+maxretry  = 3
+bantime   = 1h
+findtime  = 1m

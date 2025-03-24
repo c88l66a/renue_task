@@ -1,0 +1,17 @@
+---
+- name: Установка nginx
+  apt: "name=nginx state=present"
+  retries: 5
+  delay: 10
+  register: result
+  until: result is success
+
+- name: Копирование конфига nginx
+  copy: "src={{ item }} dest={{ nginx_conf_path }}"
+  with_items:
+    - default
+
+- name: Запуск nginx
+  service: "name=nginx state=restarted"
+
+

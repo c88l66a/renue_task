@@ -1,0 +1,25 @@
+---
+- name: Копирование конфига sshd
+  copy: "src={{ item }} dest={{ sshd_path }}"
+  with_items:
+    - sshd_config
+
+- name: Создание пользователя DevOps
+  user: "name={{ user }} shell=/bin/bash"
+
+- name: Назначение пароля пользователю DevOps
+  shell: "echo '{{ user }}:{{ pass }}' | chpasswd"
+
+- name: Создание каталога для публичного ssh ключа
+  shell: "mkdir -p {{ ssh_key_path }}"
+
+- name: Настройка прав на каталог .ssh
+  shell: "chown -R DevOps:DevOps {{ ssh_key_path }}"
+
+- name: Копирование публичного ключа
+  copy: "src={{ item }} dest={{ ssh_key_path }}/authorized_keys"
+  with_items:
+    - ~/.ssh/id_rsa.pub
+
+- name: Добавление пользователя в sudo
+  shell: "sed -i '/^root\\s\\+ALL=(ALL:ALL) ALL/a DevOps ALL=(ALL:ALL) NOPASSWD:ALL' /etc/sudoers"

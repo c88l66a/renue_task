@@ -1,0 +1,62 @@
+---
+- name: Установка Postgresql
+  apt: "name=postgresql state=present"
+
+- name: Установка python модуля python3-psycopg2
+  apt: "name={{ item }} state=present"
+  with_items:
+    - python3-psycopg2
+
+- name: Изменение конф файлов
+  copy: "src={{ item }} dest={{ postgres_conf_dir_path }}"
+  with_items:
+    - pg_hba.conf
+    - postgresql.conf
+
+- name: Запуск Postgresql
+  service: "name=postgresql state=restarted"
+
+- name: Создание пользователя app
+  postgresql_user: "name={{ user_app }} password={{ pass_app }} state=present"
+  become_user: postgres
+
+- name: Создание базы app
+  postgresql_db: "name={{ db_app }} owner={{ user_app }}"
+  become_user: postgres
+
+- name: Создание пользователя custom
+  postgresql_user: "name={{ user_custom }} password={{ pass_custom }} state=present"
+  become_user: postgres
+
+- name: Создание базы custom
+  postgresql_db: "name={{ db_custom }} owner={{ user_custom }}"
+  become_user: postgres
+
+- name: Создание пользователя service
+  postgresql_user: "name={{ user_service }} password={{ pass_service }} state=present"
+  become_user: postgres
+
+- name: Права на чтение для базы app
+  postgresql_query:
+    db: "{{ db_app }}"
+    login_host: localhost
+    login_user: "{{ user_app }}"
+    login_password: "{{ pass_app }}"
+    query: |
+      GRANT SELECT ON ALL TABLES IN SCHEMA public TO {{ user_service }};
+      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO {{ user_service }};
+
+- name: Права на чтение для базы custom
+  postgresql_query:
+    db: "{{ db_custom }}"
+    login_host: localhost
+    login_user: "{{ user_custom }}"
+    login_password: "{{ pass_custom }}"
+    query: |
+      GRANT SELECT ON ALL TABLES IN SCHEMA public TO {{ user_service }};
+      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO {{ user_service }};
+
+- name: Создание пользователя, от имени которого будут происходить бэкапы
+  postgresql_user: "name={{ user_backup }} password={{ pass_backup }} role_attr_flags=REPLICATION,LOGIN"
+  become_user: postgres
+

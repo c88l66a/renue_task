@@ -1,0 +1,16 @@
+---
+- name: Скачивание и установка fail2ban
+  apt: "name=fail2ban state=present"
+
+- name: Копирование jail файла, для блокирования пользователя при неудачных попытках входа по ssh или postgresql
+  copy: "src={{ item }} dest={{ jail_path }}"
+  with_items:
+    - jail.local
+
+- name: Копирование фильтра для блокирования postgresql
+  copy: "src={{ item }} dest={{ filter_path }}"
+  with_items:
+    - postgresql.conf
+
+- name: Запуск fail2ban
+  service: "name=fail2ban state=restarted"

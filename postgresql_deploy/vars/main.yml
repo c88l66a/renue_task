@@ -1,0 +1,17 @@
+---
+db_app: app
+db_custom: custom
+
+user_app: app
+pass_app: app
+
+user_custom: custom
+pass_custom: custom
+
+user_service: service
+pass_service: service
+
+postgres_conf_dir_path: /etc/postgresql/12/main/
+
+user_backup: repl_user
+pass_backup: qwe
